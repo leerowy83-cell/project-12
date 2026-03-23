@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: azani
+    runtime: python
+    region: frankfurt
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate"
+    startCommand: "gunicorn azani.wsgi --log-file -"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: "azani.onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://azani.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: azani-db
+          property: connectionString
+
+databases:
+  - name: azani-db
+    databaseName: azani
+    plan: free
